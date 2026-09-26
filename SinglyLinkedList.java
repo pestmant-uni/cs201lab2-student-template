@@ -100,53 +100,91 @@ public class SinglyLinkedList<E extends Comparable<E>> {
     }
 
     // write your codes here
-    public void swap(){
-        if (size > 1) {
-            ArrayList<Node<E>> original = new ArrayList<>();
+    public void swap() {
+        if (size <= 1) {
+            return;
+        }
 
-            Node<E> current = head;
-            while (current != null) {
-                original.add(current);
-                current = current.getNext();
+        ArrayList<Node<E>> nodes = new ArrayList<>();
+
+        Node<E> current = head;
+        while (current != null) {
+            nodes.add(current);
+            current = current.getNext();
+        }
+
+        ArrayList<Node<E>> sorted = new ArrayList<>(nodes);
+
+        mergeSort(sorted, 0, sorted.size() - 1);
+
+        java.util.HashMap<Node<E>, Integer> rankMap = new java.util.HashMap<>();
+
+        for (int i = 0; i < sorted.size(); i++) {
+            rankMap.put(sorted.get(i), i);
+        }
+
+        ArrayList<Node<E>> newOrder = new ArrayList<>();
+
+        for (Node<E> node : nodes) {
+            int rank = rankMap.get(node);
+
+            int oppositeRank = sorted.size() - 1 - rank;
+
+            newOrder.add(sorted.get(oppositeRank));
+        }
+
+        for (int i = 0; i < newOrder.size() - 1; i++) {
+            newOrder.get(i).setNext(newOrder.get(i + 1));
+        }
+
+        newOrder.get(newOrder.size() - 1).setNext(null);
+
+        head = newOrder.get(0);
+        tail = newOrder.get(newOrder.size() - 1);
+    }
+
+    private void mergeSort(ArrayList<Node<E>> list, int left, int right) {
+        if (left >= right) {
+            return;
+        }
+
+        int middle = (left + right) / 2;
+
+        mergeSort(list, left, middle);
+        mergeSort(list, middle + 1, right);
+
+        merge(list, left, middle, right);
+    }
+
+    private void merge(ArrayList<Node<E>> list, int left, int middle, int right) {
+        ArrayList<Node<E>> temp = new ArrayList<>();
+
+        int i = left;
+        int j = middle + 1;
+
+        while (i <= middle && j <= right) {
+            if (list.get(i).getElement()
+                    .compareTo(list.get(j).getElement()) <= 0) {
+                temp.add(list.get(i));
+                i++;
+            } else {
+                temp.add(list.get(j));
+                j++;
             }
+        }
 
-            ArrayList<Node<E>> sorted = new ArrayList<>(original);
+        while (i <= middle) {
+            temp.add(list.get(i));
+            i++;
+        }
 
-            // selection sort
-            for (int i = 0; i < sorted.size() - 1; i++) {
-                int smallest = i;
+        while (j <= right) {
+            temp.add(list.get(j));
+            j++;
+        }
 
-                for (int j = i + 1; j < sorted.size(); j++) {
-                    if (sorted.get(j).getElement().compareTo(sorted.get(smallest).getElement()) < 0) {
-                        smallest = j;
-                    }
-                }
-
-                Node<E> temp = sorted.get(i);
-                sorted.set(i, sorted.get(smallest));
-                sorted.set(smallest, temp);
-            }
-
-            ArrayList<Node<E>> newOrder = new ArrayList<>();
-            
-            for (Node<E> node : original) {
-                int index = 0;
-
-                while (sorted.get(index) != node) {
-                    index++;
-                }
-                int oppositeRank = sorted.size() - 1 - index;
-
-                newOrder.add(sorted.get(oppositeRank));
-            } 
-
-            for (int i = 0; i < newOrder.size() - 1; i++) {
-                newOrder.get(i).setNext(newOrder.get(i + 1));
-            }
-            newOrder.get(newOrder.size() - 1).setNext(null);
-
-            head = newOrder.get(0);
-            tail = newOrder.get(newOrder.size() - 1);
+        for (int k = 0; k < temp.size(); k++) {
+            list.set(left + k, temp.get(k));
         }
     }
 }
