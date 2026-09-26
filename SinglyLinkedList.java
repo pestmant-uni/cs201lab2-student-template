@@ -1,4 +1,4 @@
-import java.util.*;
+import java.util.ArrayList;
 
 public class SinglyLinkedList<E extends Comparable<E>> {
     private Node<E> head = null;
@@ -101,9 +101,42 @@ public class SinglyLinkedList<E extends Comparable<E>> {
 
     // write your codes here
     public void swap(){
-        
+        if (size > 1) {
+            ArrayList<Node<E>> sorted = new ArrayList<>();
 
+            Node<E> current = head;
+            while (current != null) {
+                sorted.add(current);
+                current = current.getNext();
+            }
+
+            // selection sort
+            for (int i = 0; i < sorted.size() - 1; i++) {
+                int smallest = i;
+
+                for (int j = i + 1; j < sorted.size(); j++) {
+                    if (sorted.get(j).getElement().compareTo(sorted.get(smallest).getElement()) < 0) {
+                        smallest = j;
+                    }
+                }
+
+                E temp = sorted.get(i).getElement();
+                sorted.get(i).element = sorted.get(smallest).element;
+                sorted.get(smallest).element = temp;
+            }
+
+            int left = 0;
+            int right = sorted.size() - 1;
+
+            while (left < right) {
+                E temp = sorted.get(left).element;
+                sorted.get(left).element = sorted.get(right).element;
+                sorted.get(right).element = temp;
+
+                left++;
+                right--;
+            }
+        }
     }
-   
 }
 
