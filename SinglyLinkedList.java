@@ -102,13 +102,15 @@ public class SinglyLinkedList<E extends Comparable<E>> {
     // write your codes here
     public void swap(){
         if (size > 1) {
-            ArrayList<Node<E>> sorted = new ArrayList<>();
+            ArrayList<Node<E>> original = new ArrayList<>();
 
             Node<E> current = head;
             while (current != null) {
-                sorted.add(current);
+                original.add(current);
                 current = current.getNext();
             }
+
+            ArrayList<Node<E>> sorted = new ArrayList<>(original);
 
             // selection sort
             for (int i = 0; i < sorted.size() - 1; i++) {
@@ -120,22 +122,31 @@ public class SinglyLinkedList<E extends Comparable<E>> {
                     }
                 }
 
-                E temp = sorted.get(i).getElement();
-                sorted.get(i).element = sorted.get(smallest).element;
-                sorted.get(smallest).element = temp;
+                Node<E> temp = sorted.get(i);
+                sorted.set(i, sorted.get(smallest));
+                sorted.set(smallest, temp);
             }
 
-            int left = 0;
-            int right = sorted.size() - 1;
+            ArrayList<Node<E>> newOrder = new ArrayList<>();
+            
+            for (Node<E> node : original) {
+                int index = 0;
 
-            while (left < right) {
-                E temp = sorted.get(left).element;
-                sorted.get(left).element = sorted.get(right).element;
-                sorted.get(right).element = temp;
+                while (sorted.get(index) != node) {
+                    index++;
+                }
+                int oppositeRank = sorted.size() - 1 - index;
 
-                left++;
-                right--;
+                newOrder.add(sorted.get(oppositeRank));
+            } 
+
+            for (int i = 0; i < newOrder.size() - 1; i++) {
+                newOrder.get(i).setNext(newOrder.get(i + 1));
             }
+            newOrder.get(newOrder.size() - 1).setNext(null);
+
+            head = newOrder.get(0);
+            tail = newOrder.get(newOrder.size() - 1);
         }
     }
 }
